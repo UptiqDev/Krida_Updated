@@ -1,6 +1,9 @@
-
-import { Token } from "@/types";
-import { useNavigate } from "react-router-dom";
+import { Token, University } from '@/data/types';
+import { fetchUniversitiesList, fetchUniversityDetails } from '@/services/universityAPI';
+import { useQuery } from '@tanstack/react-query';
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
 
 interface TokenTableProps {
   tokens: Token[];
@@ -10,10 +13,43 @@ interface TokenTableProps {
 
 const TokenTable = ({ tokens, showStatus = false, showListingDate = false }: TokenTableProps) => {
   const navigate = useNavigate();
-
   const handleRowClick = (universityId: string) => {
-    navigate(`/university/${universityId}`);
+    const targetUrl = `/university/${universityId}`;
+    navigate(targetUrl);
   };
+
+  // const [university, setUniversity] = useState<University[]>([]);
+  // const [loading, setLoading] = useState(true);
+
+// useEffect(() => {
+//   const loadTokens = async () => {
+//     try {
+//       const Data: any  = await fetchUniversitiesList();
+//         const uni = Data.map((uni: any) => {
+//           return {
+//             id: uni._id,
+//             name: uni.university_name,
+//           };
+//         }
+//       );
+//       console.log("Data", uni);
+//       setUniversity(uni);
+//     } catch (error) {
+//       console.error('Failed to fetch tokens:', error);
+//       toast.error('Error loading token data');
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
+
+//   loadTokens();
+// }, []);
+  
+  // const { data: universities, isLoading } = useQuery({
+  //   queryKey: ['universitiesList'],
+  //   queryFn: fetchUniversitiesList,
+  // });
+  
 
   return (
     <div className="overflow-x-auto w-full">
@@ -54,7 +90,7 @@ const TokenTable = ({ tokens, showStatus = false, showListingDate = false }: Tok
               <td className="p-4 flex items-center">
                 {token.image && (
                   <img
-                    src={token.image}
+                    src={token.universityLogo}
                     alt={token.universityName}
                     className="w-6 h-6 rounded-full mr-2 object-cover"
                   />
@@ -62,25 +98,25 @@ const TokenTable = ({ tokens, showStatus = false, showListingDate = false }: Tok
                 <span>{token.universityName}</span>
               </td>
 
-              {showListingDate && (
-                <td className="p-4">{token.listingDate || "-"}</td>
-              )}
+              {showListingDate && <td className='p-4'>{token.listingDate || '-'}</td>}
               {showStatus && (
-                <td className="p-4">
+                <td className='p-4'>
                   {token.status && (
-                    <span className={`px-3 py-1 rounded-full text-xs font-medium ${token.status === 'Presale'
+                    <span
+                      className={`px-3 py-1 rounded-full text-xs font-medium ${token.status === 'Presale'
                         ? 'bg-amber-100 text-amber-800'
                         : token.status === 'Token Distribution'
                           ? 'bg-green-100 text-green-800'
                           : 'bg-gray-100 text-gray-800'
-                      }`}>
+                        }`}
+                    >
                       {token.status}
                     </span>
                   )}
                 </td>
               )}
-              <td className="p-4">{token.volume}</td>
-              <td className="p-4">{token.price}</td>
+              <td className='p-4'>{token.volume}</td>
+              <td className='p-4'>{token.price}</td>
             </tr>
           ))}
         </tbody>
